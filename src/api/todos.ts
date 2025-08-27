@@ -1,8 +1,4 @@
-// API helpers for todos (load, create, delete)
-
-import { client } from '../utils/fetchClient';
-
-export const USER_ID = 3430;
+import { client } from './fetchClient'; // same import used by getTodos/deleteTodo
 
 export type Todo = {
   id: number;
@@ -11,32 +7,14 @@ export type Todo = {
   completed: boolean;
 };
 
-export async function getTodos(userId: number): Promise<Todo[]> {
-  // tiny artificial delay so Cypress timings match
-  await new Promise(r => setTimeout(r, 150));
+export const USER_ID = 3430; // or whatever constant you have
 
-  return client.get<Todo[]>(`/todos?userId=${userId}`);
-}
+export const getTodos = (userId: number) =>
+  client.get<Todo[]>(`/todos?userId=${userId}`);
 
-export async function createTodo(
+export const createTodo = (
   userId: number,
   data: { title: string; completed: boolean },
-): Promise<Todo> {
-  const response = await fetch('/todos', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, ...data }),
-  });
+) => client.post<Todo>('/todos', { userId, ...data });
 
-  if (!response.ok) {
-    throw new Error('Create failed');
-  }
-
-  return response.json();
-}
-
-export async function deleteTodo(id: number): Promise<void> {
-  await new Promise(r => setTimeout(r, 150));
-
-  return client.delete(`/todos/${id}`);
-}
+export const deleteTodo = (id: number) => client.delete(`/todos/${id}`);

@@ -1,13 +1,12 @@
 import React from 'react';
-import { Todo } from '../../types/Todo';
+import { Todo } from '../../api/todos';
 import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
   todos: Todo[];
   loadingIds?: Set<number>;
   disableActions?: boolean;
-  tempTodo?: Todo | null;
-  onToggle?: (todo: Todo) => void;
+  tempTodo: Todo | null;
   onDelete: (todo: Todo) => void;
 };
 
@@ -16,7 +15,6 @@ export const TodoList: React.FC<Props> = ({
   loadingIds,
   disableActions = false,
   tempTodo,
-  onToggle,
   onDelete,
 }) => {
   return (
@@ -28,7 +26,6 @@ export const TodoList: React.FC<Props> = ({
             todo={todo}
             loading={loadingIds?.has(todo.id) ?? false}
             disableActions={disableActions}
-            onToggle={onToggle}
             onDelete={onDelete}
           />
         ))}

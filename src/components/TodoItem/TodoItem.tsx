@@ -1,31 +1,34 @@
-import React from 'react';
-import { Todo } from '../../types/Todo';
+import React, { useMemo } from 'react';
+import cn from 'classnames';
+import { Todo } from '../../api/todos';
 
 type Props = {
   todo: Todo;
-  disableActions?: boolean;
   loading?: boolean;
-  onToggle?: (todo: Todo) => void;
+  disableActions?: boolean;
   onDelete: (todo: Todo) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  disableActions = false,
   loading = false,
-  onToggle,
+  disableActions = false,
   onDelete,
 }) => {
-  const statusId = `todo-status-${todo.id}`;
+  const statusId = useMemo(() => `status-${todo.id}`, [todo.id]);
 
   return (
-    <li className={`todo ${todo.completed ? 'completed' : ''}`} data-cy="Todo">
-      {/* keep your label/input structure */}
-      <label
-        className="todo__status-label"
-        htmlFor={statusId}
-        aria-checked={todo.completed}
+    <li className={cn('todo', { completed: todo.completed })} data-cy="Todo">
+      {/* Loader should always exist, only active when loading */}
+      <div
+        data-cy="TodoLoader"
+        className={cn('modal overlay', { 'is-active': loading })}
       >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
+
+      <label className="todo__status-label" htmlFor={statusId}>
         <input
           id={statusId}
           type="checkbox"
@@ -33,11 +36,9 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoStatus"
           checked={todo.completed}
           readOnly
-          disabled={disableActions || loading}
-          onChange={() => onToggle?.(todo)}
         />
         <span className="visually-hidden">
-          Mark todo as {todo.completed ? 'active' : 'completed'}
+          Mark todo as {todo.completed ? 'incomplete' : 'complete'}
         </span>
       </label>
 
@@ -50,20 +51,9 @@ export const TodoItem: React.FC<Props> = ({
         className="todo__remove"
         data-cy="TodoDelete"
         aria-label="Delete todo"
-        disabled={disableActions || loading}
+        disabled={disableActions || loading || todo.id === 0}
         onClick={() => onDelete(todo)}
-      >
-        ×
-      </button>
-
-      {/* Loader overlay — always present; active only while loading */}
-      <div
-        data-cy="TodoLoader"
-        className={`modal overlay ${loading ? 'is-active' : ''}`}
-      >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      />
     </li>
   );
 };
